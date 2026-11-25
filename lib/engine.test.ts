@@ -36,3 +36,26 @@ describe("Tâche 1 - score d'une manche, cas standard", () => {
     expect(s.a).toBe(1); // b = 1 seul Ciseaux, l'absent n'est pas compté
   });
 });
+
+describe("Tâche 2 - cas limites du score", () => {
+  it("Critère 4 - tout le monde joue pareil : personne ne marque, même avec le modificateur sur ce coup", () => {
+    const s = scoreRound(round({ paper: 4 }), { move: "paper", value: 0.5 });
+    expect(Object.values(s)).toEqual([0, 0, 0, 0]);
+  });
+
+  it("Critère 5 - modificateur en défaite : le perdant marque -0,5 (total négatif possible)", () => {
+    const s = scoreRound({ a: "rock", b: "paper" }, { move: "rock", value: -0.5 });
+    expect(s.a).toBe(-0.5);
+    expect(s.b).toBe(1);
+  });
+
+  it("Cas limite - un seul joueur a joué, les autres absents : personne ne marque", () => {
+    const s = scoreRound({ a: "rock", b: null, c: null }, { move: "rock", value: 0.5 });
+    expect(s).toEqual({ a: 0, b: 0, c: 0 });
+  });
+
+  it("Cas limite - modificateur sur un coup que personne n'a joué : aucun effet", () => {
+    const s = scoreRound({ a: "rock", b: "scissors" }, { move: "paper", value: 0.5 });
+    expect(s).toEqual({ a: 1, b: 0 });
+  });
+});

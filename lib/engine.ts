@@ -33,6 +33,15 @@ export function countMoves(moves: RoundMoves): Record<Move, number> {
 export function scoreRound(moves: RoundMoves, modifier: Modifier | null): Record<string, number> {
   const counts = countMoves(moves);
   const result: Record<string, number> = {};
+
+  // Décision PM : si un seul coup a été joué (tout le monde pareil, ou un seul joueur présent),
+  // personne ne marque, modificateur compris.
+  const distinctMoves = MOVES.filter((m) => counts[m] > 0).length;
+  if (distinctMoves <= 1) {
+    for (const player of Object.keys(moves)) result[player] = 0;
+    return result;
+  }
+
   for (const [player, move] of Object.entries(moves)) {
     if (!move) {
       result[player] = 0;
