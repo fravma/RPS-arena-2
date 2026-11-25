@@ -72,3 +72,18 @@ export function winners(playerTotals: Record<string, number>): string[] {
   const best = Math.max(...entries.map(([, t]) => t));
   return entries.filter(([, t]) => best - t < TIE_TOLERANCE).map(([p]) => p);
 }
+
+/** Source de hasard : renvoie un nombre dans [0, 1[. Injectable pour les tests. */
+export type Rng = () => number;
+
+/** Valeurs autorisées des modificateurs (décision PM : ±0,5 uniquement). */
+export const MODIFIER_VALUES = [0.5, -0.5];
+export const ROUNDS = 10;
+
+/** Tire un modificateur par manche, au hasard. */
+export function drawModifiers(rounds: number = ROUNDS, rng: Rng = Math.random): Modifier[] {
+  return Array.from({ length: rounds }, () => ({
+    move: MOVES[Math.floor(rng() * MOVES.length)],
+    value: MODIFIER_VALUES[Math.floor(rng() * MODIFIER_VALUES.length)],
+  }));
+}

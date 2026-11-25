@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scoreRound, totals, winners, type Move, type RoundMoves } from "./engine";
+import { drawModifiers, scoreRound, totals, winners, type Move, type RoundMoves } from "./engine";
 
 /** Construit une manche : { rock: 1, scissors: 4 } donne rock0, scissors1..scissors4. */
 function round(spec: Partial<Record<Move, number>>): RoundMoves {
@@ -80,5 +80,28 @@ describe("Tâche 3 - fin de partie", () => {
     ]);
     expect(t.a).not.toBe(t.b); // l'arrondi existe bien
     expect(winners(t).sort()).toEqual(["a", "b"]);
+  });
+});
+
+/** Hasard fixe et rejouable (suite pseudo-aléatoire à partir d'une graine). */
+function seeded(seed: number) {
+  return () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+}
+
+describe("Tâche 4 - tirage des modificateurs", () => {
+  it("Critère 8 - 10 modificateurs, chacun vise un coup avec +0,5 ou -0,5", () => {
+    const mods = drawModifiers();
+    expect(mods).toHaveLength(10);
+    for (const m of mods) {
+      expect(["rock", "paper", "scissors"]).toContain(m.move);
+      expect([0.5, -0.5]).toContain(m.value);
+    }
+  });
+
+  it("Critère 8 - même hasard fixe, même tirage", () => {
+    expect(drawModifiers(10, seeded(42))).toEqual(drawModifiers(10, seeded(42)));
   });
 });
