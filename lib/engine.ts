@@ -54,3 +54,21 @@ export function scoreRound(moves: RoundMoves, modifier: Modifier | null): Record
   }
   return result;
 }
+
+/** Total de chaque joueur : somme de ses points sur toutes les manches. */
+export function totals(rounds: Record<string, number>[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const r of rounds) for (const [player, pts] of Object.entries(r)) out[player] = (out[player] ?? 0) + pts;
+  return out;
+}
+
+/** Écart en dessous duquel deux totaux sont considérés égaux (parade sur les arrondis, plan T0 risque 1). */
+export const TIE_TOLERANCE = 1e-9;
+
+/** Gagnant(s) : tous les joueurs à égalité en tête. */
+export function winners(playerTotals: Record<string, number>): string[] {
+  const entries = Object.entries(playerTotals);
+  if (entries.length === 0) return [];
+  const best = Math.max(...entries.map(([, t]) => t));
+  return entries.filter(([, t]) => best - t < TIE_TOLERANCE).map(([p]) => p);
+}

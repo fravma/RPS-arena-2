@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scoreRound, type Move, type RoundMoves } from "./engine";
+import { scoreRound, totals, winners, type Move, type RoundMoves } from "./engine";
 
 /** Construit une manche : { rock: 1, scissors: 4 } donne rock0, scissors1..scissors4. */
 function round(spec: Partial<Record<Move, number>>): RoundMoves {
@@ -57,5 +57,28 @@ describe("Tâche 2 - cas limites du score", () => {
   it("Cas limite - modificateur sur un coup que personne n'a joué : aucun effet", () => {
     const s = scoreRound({ a: "rock", b: "scissors" }, { move: "paper", value: 0.5 });
     expect(s).toEqual({ a: 1, b: 0 });
+  });
+});
+
+describe("Tâche 3 - fin de partie", () => {
+  it("Critère 7 - le total est la somme des manches, une égalité en tête est partagée", () => {
+    const t = totals([{ a: 1, b: 2, c: 0 }, { a: 2, b: 1, c: 0.5 }]);
+    expect(t).toEqual({ a: 3, b: 3, c: 0.5 });
+    expect(winners(t).sort()).toEqual(["a", "b"]);
+  });
+
+  it("Critère 7 - un seul meilleur total donne un seul gagnant", () => {
+    expect(winners({ a: 3, b: 2.5 })).toEqual(["a"]);
+  });
+
+  it("Parade arrondis - mêmes points dans un ordre différent (2,5 contre 2,4999999999999996) : égalité", () => {
+    const t = totals([
+      { a: 2 / 3, b: 0.5 },
+      { a: 2 / 3, b: 2 / 3 },
+      { a: 2 / 3, b: 2 / 3 },
+      { a: 0.5, b: 2 / 3 },
+    ]);
+    expect(t.a).not.toBe(t.b); // l'arrondi existe bien
+    expect(winners(t).sort()).toEqual(["a", "b"]);
   });
 });
