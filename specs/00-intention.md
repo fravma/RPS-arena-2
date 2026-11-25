@@ -1,4 +1,4 @@
-# Fiche de cadrage - RPS Arena
+# Intention - RPS Arena (fiche de cadrage)
 
 Validée par le PM le 23/11/2026. Méthode : « Méthode POC express » (projet Claude).
 
