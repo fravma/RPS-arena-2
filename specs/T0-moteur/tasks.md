@@ -1,6 +1,6 @@
 # Tâches T0 - Moteur de score
 
-Statut : brouillon, en attente de validation PM.
+Statut : validées par le PM le 25/11/2026.
 
 Chaque tâche se termine par des tests verts. Les numéros entre crochets renvoient aux critères d'acceptation de la spec.
 
