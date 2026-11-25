@@ -25,9 +25,20 @@ Sur la page d'accueil, un joueur lance une partie de 10 manches contre 4 bots qu
 7. **Règle expliquée**
    Étant donné la page d'accueil ou une partie en cours, quand je regarde sous le titre, alors une phrase explique la règle : points = joueurs battus ÷ joueurs ayant fait le même coup, plus le modificateur de la manche.
 
+## Expérience (UX/UI)
+Inspiration Apple (demande PM). Traduction proposée, à valider :
+- Sobre : beaucoup d'espace, un seul élément important par zone, pas de décor superflu.
+- Typographie système (celle de l'appareil), titres grands et fins, textes courts.
+- Fond clair, cartes blanches à coins arrondis, ombres légères.
+- Une seule couleur d'accent (bleu) pour l'action principale ; vert et rouge réservés aux modificateurs + et -.
+- Les trois coups en gros boutons, faciles à toucher.
+- Transitions discrètes (apparition douce de la révélation), jamais gênantes.
+- Inspiration, pas imitation : aucun logo, nom ou élément de marque Apple.
+
 ## Hors scope
-Réglage du nombre de bots ou du timer, bots « intelligents », sauvegarde de la partie (un rechargement de page la perd), soin visuel au-delà du lisible, version mobile soignée.
+Réglage du nombre de bots ou du timer, bots « intelligents », sauvegarde de la partie (un rechargement de page la perd), animations élaborées, mode sombre, version mobile soignée.
 
 ## Décisions du PM (25/11)
 1. Critère 4 (timer) gardé, même s'il sera remplacé par le timer serveur en T2b.
 2. Règle expliquée à l'écran (critère 7).
+3. Inspiration visuelle Apple (section Expérience).

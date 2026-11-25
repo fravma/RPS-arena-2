@@ -17,7 +17,7 @@ Chaque tâche se termine par des tests verts. Les numéros entre crochets renvoi
    Fait quand : ces 4 cas sont testés.
 
 4. **Écran** [1 à 7]
-   Page d'accueil avec la règle expliquée, manche avec modificateur et timer de 20 s, révélation, classement, rejouer. Mise en forme minimale.
+   Page d'accueil avec la règle expliquée, manche avec modificateur et timer de 20 s, révélation, classement, rejouer. Mise en forme selon la section Expérience de la spec (inspiration Apple).
    Fait quand : build OK, et une partie complète jouée automatiquement en local sans erreur.
 
 5. **PR prête pour ta vérification**
