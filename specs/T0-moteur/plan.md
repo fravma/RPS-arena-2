@@ -1,6 +1,6 @@
 # Plan T0 - Moteur de score
 
-Statut : brouillon, en attente de validation PM.
+Statut : validé par le PM le 25/11/2026.
 
 ## Fichiers
 - `lib/engine.ts` : types et fonctions pures. Aucune dépendance, aucun accès réseau ni stockage.
@@ -30,10 +30,10 @@ Conséquence sans parade : `winners` désignerait un seul gagnant au lieu d'une 
 Parade : deux totaux dont l'écart est inférieur à 0,000000001 sont considérés comme égaux. Un test reproduit exactement l'exemple ci-dessus.
 
 ### 2. Cas limites non couverts par le brief (probabilité moyenne, impact faible)
-Cas repérés, avec le comportement que le plan en déduit (inférence, à valider) :
+Cas repérés, comportements validés par le PM :
 - **Un seul joueur a joué, les autres sont absents** : un seul coup présent, donc personne ne marque (règle « tout le monde pareil »).
 - **Modificateur sur un coup que personne n'a joué** : aucun effet.
-- **Nombre de joueurs hors de 2 à 10** : le moteur ne contrôle pas. Le contrôle se fera à l'entrée dans la salle (T2).
+- **Nombre de joueurs hors de 2 à 10** : le moteur ne contrôle pas (décision PM, option A). Le contrôle se fait à l'entrée dans la salle : critère ajouté au découpage de T2.
 
 Tout autre cas découvert en codant est remonté au PM, pas tranché par l'agent.
 

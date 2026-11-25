@@ -14,3 +14,4 @@ Validé par le PM le 23/11/2026.
 Points ouverts :
 - T1 : critère « timer expiré » à garder ou couper (arbitrage PM au moment de la spec T1).
 - T4 : valeur de N et coût des parties entre agents LLM (à trancher dans la spec T4).
+- T2a : critère à inclure dans la spec : « une 11e personne ne peut pas rejoindre la salle » et « une partie ne démarre pas avec moins de 2 joueurs » (décision T0, le moteur ne contrôle pas le nombre de joueurs).
