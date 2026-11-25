@@ -1,6 +1,6 @@
 # Plan T1 - Partie solo contre des bots
 
-Statut : brouillon, en attente de validation PM.
+Statut : validé par le PM le 25/11/2026.
 
 ## Fichiers
 - `lib/solo.ts` : la logique d'une partie solo, en fonctions pures (démarrer, choisir, valider, timer expiré, manche suivante). S'appuie sur le moteur T0, sans le modifier.
