@@ -44,7 +44,7 @@ Traduction proposée pour RPS Arena (à valider avec la maquette) :
 - Bouton d'action unique en bleu vif ; vert et rouge gardés pour les modificateurs + et -.
 - Inspiration, pas copie : aucun logo, texte ou illustration du studio.
 
-Maquette (4 écrans, en attente de validation PM) : https://claude.ai/artifact/2LW614FbQqbomW2jfdGwCa
+Maquette (4 écrans, validée par le PM le 27/11) : https://claude.ai/artifact/2LW614FbQqbomW2jfdGwCa
 
 Règles d'affichage :
 - Sur un MacBook Pro 14 pouces (fenêtre d'environ 1512 × 860), les boutons d'action (Créer, Rejoindre, Lancer, Valider, Manche suivante) sont visibles sans défiler, même à 10 joueurs.
