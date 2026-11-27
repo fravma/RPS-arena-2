@@ -1,6 +1,6 @@
 # Plan T2a - Salle partagée
 
-Statut : brouillon, en attente de validation PM.
+Statut : validé par le PM le 27/11/2026.
 
 ## Architecture en une phrase
 Le navigateur de chaque joueur interroge le serveur toutes les 2 secondes ; le serveur (fonctions Vercel) lit et écrit l'état de la salle dans Redis (Upstash) et calcule ce que chaque joueur a le droit de voir.
