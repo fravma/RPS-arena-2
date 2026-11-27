@@ -1,0 +1,85 @@
+/* Inspiration Apple : sobre, espacé, police système, fond clair, une couleur d'accent. */
+:root {
+  --bg: #f5f5f7;
+  --card: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --line: #e5e5ea;
+  --accent: #0071e3;
+  --accent-soft: #e8f1fc;
+  --plus: #1f9d55;
+  --minus: #d70015;
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { max-width: 680px; margin: 0 auto; padding: 56px 20px 80px; }
+
+h1 { font-size: 48px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 20px; }
+.rule { color: var(--muted); font-size: 17px; line-height: 1.5; margin: 12px 0 40px; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.muted { color: var(--muted); font-size: 15px; }
+.eyebrow { color: var(--muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.modifier { font-size: 22px; font-weight: 600; margin-top: 6px; }
+.plus { color: var(--plus); }
+.minus { color: var(--minus); }
+
+.timer {
+  min-width: 64px; text-align: center;
+  font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums;
+  padding: 8px 14px; border-radius: 999px; background: var(--bg);
+}
+.timer.low { color: var(--minus); }
+
+.moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.move {
+  border: 2px solid var(--line); background: var(--card); color: var(--text);
+  border-radius: var(--radius); padding: 22px 8px; cursor: pointer;
+  font-size: 17px; font-weight: 500; font-family: inherit;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+.move:hover:not(:disabled) { border-color: var(--accent); }
+.move:active:not(:disabled) { transform: scale(0.98); }
+.move.picked { border-color: var(--accent); background: var(--accent-soft); }
+.move:disabled { cursor: default; opacity: 0.5; }
+.move .icon { display: block; font-size: 40px; margin-bottom: 8px; }
+
+.primary {
+  background: var(--accent); color: white; border: 0; border-radius: 999px;
+  padding: 12px 24px; font-size: 17px; font-weight: 500; font-family: inherit; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.primary:disabled { opacity: 0.35; cursor: default; }
+.actions { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+
+.counts { display: flex; gap: 20px; font-size: 17px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 17px; }
+th { text-align: left; color: var(--muted); font-weight: 500; font-size: 13px; padding: 0 0 10px; }
+td { padding: 12px 0; border-top: 1px solid var(--line); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.me td { font-weight: 600; }
+.badge { color: var(--accent); font-size: 13px; font-weight: 600; margin-left: 8px; }
+
+.reveal { animation: appear 0.35s ease-out; }
+@keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
