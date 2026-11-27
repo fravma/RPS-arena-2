@@ -1,6 +1,6 @@
 # Spec T2a - Salle partagée
 
-Statut : brouillon, 1 question ouverte.
+Statut : validée par le PM le 27/11/2026.
 
 ## Pourquoi
 Faire jouer plusieurs humains dans la même partie, chacun sur son appareil. C'est la base du critère de démo a) (2 humains et 1 agent IA), et la première tranche avec un serveur : c'est là que se trouve le principal risque technique du projet (état partagé sur Vercel).
@@ -21,7 +21,7 @@ Un joueur crée une salle et obtient un code. D'autres le rejoignent avec ce cod
 5. **Coups cachés**
    Étant donné une manche ouverte, quand un joueur valide son coup, alors les autres voient qu'il « a joué », mais pas son coup.
 6. **Révélation automatique**
-   Étant donné que tous les joueurs humains ont validé, alors la manche se révèle automatiquement chez tous en 3 secondes au plus, sans action de personne : coups, points et totaux, calculés avec la même règle qu'en T1.
+   Étant donné que tous les joueurs ont validé (en T2a, uniquement des humains ; à partir de T3, les agents IA comptent aussi), alors la manche se révèle automatiquement chez tous en 3 secondes au plus, sans action de personne : coups, points et totaux, calculés avec la même règle qu'en T1.
 7. **Manche suivante et fin de partie**
    Étant donné une manche révélée, quand le créateur clique sur « Manche suivante », alors la manche suivante s'ouvre chez tous. Après la manche 10, tous voient le même classement final.
 8. **Rejoindre une partie déjà lancée**
@@ -56,12 +56,9 @@ Timer de manche et joueur absent (T2b), reconnexion après une coupure (T2b), ag
 Une base de données Redis (Upstash, via la Marketplace Vercel) devra être reliée au projet Vercel. C'est une action sur ton compte : je te donnerai les étapes au moment du plan.
 
 ## Décisions du PM (27/11)
-1. Mise à jour automatique (3 s au plus), révélation automatique quand tous les joueurs humains ont validé.
+1. Mise à jour automatique (3 s au plus), révélation automatique quand tous les joueurs ont validé, agents IA compris à partir de T3.
 2. Prénom en double refusé.
 3. Écran cible : MacBook Pro 14 pouces.
 4. Maquette avant le code (étape Maquette de la méthode).
 5. Style inspiré de maemi-studio.fr, à la place de l'inspiration Apple.
-
-## Questions ouvertes
-1. **Passage à la manche suivante** : qui déclenche ? (voir réponse en cours)
-2. **En T3 (agents IA)** : la révélation attend-elle aussi les agents, ou seulement les humains ? À trancher dans la spec de T3.
+6. Le créateur de la salle fait passer à la manche suivante (option a).
