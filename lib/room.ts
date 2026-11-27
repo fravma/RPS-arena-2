@@ -13,6 +13,7 @@ export const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTVWXYZ";
 export interface Player {
   id: string;
   name: string;
+  /** Ordre d'arrivée (1, 2, 3...). */
   joinedAt: number;
 }
 
