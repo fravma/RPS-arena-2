@@ -26,6 +26,8 @@ Un joueur crée une salle et obtient un code. D'autres le rejoignent avec ce cod
    Étant donné une manche révélée, quand le créateur clique sur « Manche suivante », alors la manche suivante s'ouvre chez tous. Après la manche 10, tous voient le même classement final.
 8. **Rejoindre une partie déjà lancée**
    Étant donné une partie en cours, quand quelqu'un essaie de rejoindre avec le code, alors il voit « Partie déjà commencée » et n'entre pas.
+9. **Le créateur s'en va**
+   Étant donné une salle (en attente ou en partie), quand le créateur clique sur « Quitter la salle » ou ferme sa page depuis plus de 10 secondes, alors le joueur humain arrivé juste après lui devient administrateur : c'est lui qui voit les boutons « Lancer la partie » et « Manche suivante ». Un joueur parti ne compte plus dans les joueurs attendus pour la révélation.
 
 ## Expérience (UX/UI)
 Nouvelle direction (demande PM du 27/11) : inspiration du site maemi-studio.fr, à la place de l'inspiration Apple de T1. L'écran de T1 sera restylé dans cette tranche pour garder un seul style.
@@ -64,3 +66,5 @@ Une base de données Redis (Upstash, via la Marketplace Vercel) devra être reli
 4. Maquette avant le code (étape Maquette de la méthode).
 5. Style inspiré de maemi-studio.fr, à la place de l'inspiration Apple.
 6. Le créateur de la salle fait passer à la manche suivante (option a).
+7. Si le créateur s'en va, l'administration passe au joueur humain arrivé juste après lui (critère 9).
+8. Projet pédagogique, aucun usage commercial.
