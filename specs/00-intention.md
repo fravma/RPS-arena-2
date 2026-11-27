@@ -8,6 +8,7 @@ Validée par le PM le 23/11/2026. Méthode : « Méthode POC express » (projet 
 - **Critères de succès de la démo :**
   - a) Une partie de 10 manches en ligne avec au moins 2 humains et 1 agent IA connecté via MCP.
   - b) Deux skill.md différents s'affrontent, et on montre lequel gagne le plus sur N parties.
+- **Écran cible de la démo :** MacBook Pro du PM, navigateur. Règle : les boutons d'action (valider, manche suivante, lancer, rejouer) sont visibles sans défiler (décision PM du 27/11, remplace « pas de scroll » : le nombre de joueurs varie de 2 à 10).
 - **Règle métier centrale :** points = b / n + modificateur du coup joué. Un joueur sans coup marque 0 et ne compte ni dans b ni dans n.
 - **Exemples du brief (futurs tests) :**
   - 1 Pierre contre 4 Ciseaux : la Pierre marque 4.
