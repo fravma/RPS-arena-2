@@ -1,202 +1,71 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MOVES, ROUNDS, countMoves, type Move } from "@/lib/engine";
-import { formatModifier, formatPoints } from "@/lib/format";
-import {
-  ME,
-  ROUND_SECONDS,
-  chooseMove,
-  gameTotals,
-  gameWinners,
-  nextRound,
-  ranking,
-  startGame,
-  timeUp,
-  validate,
-  type SoloGame,
-} from "@/lib/solo";
-
-const LABEL: Record<Move, string> = { rock: "Pierre", paper: "Feuille", scissors: "Ciseaux" };
-const ICON: Record<Move, string> = { rock: "✊", paper: "✋", scissors: "✌️" };
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { RULE } from "./ui";
+import { saveToken } from "./session";
 
 export default function Home() {
-  const [game, setGame] = useState<SoloGame | null>(null);
-  const [secondsLeft, setSecondsLeft] = useState(ROUND_SECONDS);
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  // Timer de manche : repart à 20 s à chaque nouvelle manche, révèle à 0.
-  const round = game?.round;
-  const phase = game?.phase;
-  useEffect(() => {
-    if (phase !== "choose") return;
-    setSecondsLeft(ROUND_SECONDS);
-    const id = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) {
-          clearInterval(id);
-          setGame((g) => (g ? timeUp(g) : g));
-          return 0;
-        }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [round, phase]);
+  async function go(url: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name }) });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error);
+      saveToken(data.code, data.token);
+      router.push(`/salle/${data.code}`);
+    } catch (e) {
+      setError((e as Error).message || "Erreur réseau, réessayez");
+      setBusy(false);
+    }
+  }
+
+  const cleanCode = code.trim().toUpperCase();
 
   return (
     <main>
-      <h1>RPS Arena</h1>
-      <p className="rule">
-        Pierre-Feuille-Ciseaux où la minorité gagne. Points = joueurs battus ÷ joueurs ayant fait le même coup,
-        plus le modificateur de la manche.
-      </p>
+      <header className="topbar">
+        <span className="brand">RPS Arena</span>
+        <a href="/solo">Jouer en solo contre des bots →</a>
+      </header>
 
-      {!game && (
-        <div className="card">
-          <h2>Partie solo</h2>
-          <p className="muted">10 manches contre 4 bots qui jouent au hasard. {ROUND_SECONDS} secondes par manche.</p>
-          <div className="actions">
-            <span />
-            <button className="primary" onClick={() => setGame(startGame())}>Lancer une partie</button>
+      <section className="hero">
+        <h1>Pierre-Feuille-Ciseaux où la minorité gagne.</h1>
+        <p className="rule">{RULE} De 2 à 10 joueurs.</p>
+      </section>
+
+      <section className="card">
+        <label className="field" style={{ maxWidth: 360 }}>
+          Votre prénom
+          <input type="text" value={name} maxLength={20} onChange={(e) => setName(e.target.value)} autoFocus />
+        </label>
+
+        <div className="wrap">
+          <div className="option">
+            <h2>Créer une salle</h2>
+            <p className="muted" style={{ margin: 0, flexGrow: 1 }}>Vous obtenez un code à partager, puis vous lancez la partie.</p>
+            <button className="primary" disabled={busy || !name.trim()} onClick={() => go("/api/rooms")}>Créer une salle</button>
+          </div>
+
+          <div className="option paper">
+            <h2>Rejoindre une salle</h2>
+            <label className="field">
+              Code de 4 lettres
+              <input type="text" className="code-input" value={code} maxLength={4} onChange={(e) => setCode(e.target.value)} />
+            </label>
+            <button className="primary" disabled={busy || !name.trim() || cleanCode.length !== 4} onClick={() => go(`/api/rooms/${cleanCode}/join`)}>Rejoindre</button>
           </div>
         </div>
-      )}
 
-      {game && game.phase !== "over" && <RoundView game={game} secondsLeft={secondsLeft} setGame={setGame} />}
-
-      {game && game.phase === "over" && <FinalView game={game} onReplay={() => setGame(startGame())} />}
+        {error && <p className="error" role="alert" style={{ margin: 0 }}>{error}</p>}
+      </section>
     </main>
-  );
-}
-
-function RoundView({
-  game,
-  secondsLeft,
-  setGame,
-}: {
-  game: SoloGame;
-  secondsLeft: number;
-  setGame: (g: SoloGame) => void;
-}) {
-  const mod = game.modifiers[game.round];
-  const result = game.phase === "reveal" ? game.history[game.history.length - 1] : null;
-  const t = gameTotals(game);
-  // Après la révélation, on met en évidence le coup réellement compté (aucun si « pas joué »).
-  const highlighted = result ? result.moves[ME] : game.myMove;
-
-  return (
-    <>
-      <div className="card row">
-        <div>
-          <div className="eyebrow">Manche {game.round + 1} sur {ROUNDS}</div>
-          <div className="modifier">
-            {ICON[mod.move]} {LABEL[mod.move]}{" "}
-            <span className={mod.value > 0 ? "plus" : "minus"}>{formatModifier(mod.value)}</span>
-          </div>
-        </div>
-        {game.phase === "choose" && (
-          <div className={`timer ${secondsLeft <= 5 ? "low" : ""}`} aria-label="Temps restant">
-            {secondsLeft}
-          </div>
-        )}
-      </div>
-
-      <div className="card">
-        <div className="moves">
-          {MOVES.map((m) => (
-            <button
-              key={m}
-              className={`move ${highlighted === m ? "picked" : ""}`}
-              disabled={game.phase !== "choose"}
-              onClick={() => setGame(chooseMove(game, m))}
-            >
-              <span className="icon">{ICON[m]}</span>
-              {LABEL[m]}
-            </button>
-          ))}
-        </div>
-        {game.phase === "choose" && (
-          <div className="actions">
-            <span className="muted">
-              {game.myMove ? `${LABEL[game.myMove]}, modifiable jusqu'à la validation` : "Choisissez un coup"}
-            </span>
-            <button className="primary" disabled={!game.myMove} onClick={() => setGame(validate(game))}>
-              Valider
-            </button>
-          </div>
-        )}
-      </div>
-
-      {result && (
-        <div className="card reveal">
-          <div className="row" style={{ marginBottom: 20 }}>
-            <h2 style={{ margin: 0 }}>Révélation</h2>
-            <div className="counts">
-              {MOVES.map((m) => (
-                <span key={m}>{ICON[m]} {countMoves(result.moves)[m]}</span>
-              ))}
-            </div>
-          </div>
-          <table>
-            <thead>
-              <tr><th>Joueur</th><th>Coup</th><th className="num">Manche</th><th className="num">Total</th></tr>
-            </thead>
-            <tbody>
-              {ranking(game).map((p) => {
-                const m = result.moves[p];
-                return (
-                  <tr key={p} className={p === ME ? "me" : ""}>
-                    <td>{p}</td>
-                    <td>{m ? `${ICON[m]} ${LABEL[m]}` : <span className="muted">pas joué</span>}</td>
-                    <td className="num">{formatPoints(result.points[p])}</td>
-                    <td className="num">{formatPoints(t[p])}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <div className="actions">
-            <span />
-            <button className="primary" onClick={() => setGame(nextRound(game))}>
-              {game.round + 1 >= ROUNDS ? "Voir le classement" : "Manche suivante"}
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-function FinalView({ game, onReplay }: { game: SoloGame; onReplay: () => void }) {
-  const t = gameTotals(game);
-  const w = gameWinners(game);
-  const title = w.includes(ME) ? (w.length > 1 ? "Victoire partagée" : "Victoire") : w.length > 1 ? "Égalité en tête" : `${w[0]} gagne`;
-
-  return (
-    <div className="card reveal">
-      <div className="eyebrow">Classement final</div>
-      <h2 style={{ marginTop: 6 }}>{title}</h2>
-      <table>
-        <thead>
-          <tr><th>#</th><th>Joueur</th><th className="num">Total</th></tr>
-        </thead>
-        <tbody>
-          {ranking(game).map((p, i) => (
-            <tr key={p} className={p === ME ? "me" : ""}>
-              <td>{i + 1}</td>
-              <td>
-                {p}
-                {w.includes(p) && <span className="badge">Gagnant</span>}
-              </td>
-              <td className="num">{formatPoints(t[p])}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="actions">
-        <span />
-        <button className="primary" onClick={onReplay}>Rejouer</button>
-      </div>
-    </div>
   );
 }
