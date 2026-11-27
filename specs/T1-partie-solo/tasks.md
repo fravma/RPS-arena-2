@@ -1,6 +1,6 @@
 # Tâches T1 - Partie solo contre des bots
 
-Statut : brouillon, en attente de validation PM.
+Statut : validées par le PM le 27/11/2026.
 
 Chaque tâche se termine par des tests verts. Les numéros entre crochets renvoient aux critères de la spec, « R » aux risques du plan.
 

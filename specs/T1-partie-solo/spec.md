@@ -26,7 +26,7 @@ Sur la page d'accueil, un joueur lance une partie de 10 manches contre 4 bots qu
    Étant donné la page d'accueil ou une partie en cours, quand je regarde sous le titre, alors une phrase explique la règle : points = joueurs battus ÷ joueurs ayant fait le même coup, plus le modificateur de la manche.
 
 ## Expérience (UX/UI)
-Inspiration Apple (demande PM). Traduction proposée, à valider :
+Inspiration Apple (demande PM). Traduction validée par le PM le 27/11 :
 - Sobre : beaucoup d'espace, un seul élément important par zone, pas de décor superflu.
 - Typographie système (celle de l'appareil), titres grands et fins, textes courts.
 - Fond clair, cartes blanches à coins arrondis, ombres légères.
