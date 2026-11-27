@@ -1,6 +1,17 @@
 # Plan T2a - Salle partagée
 
-Statut : validé par le PM le 27/11/2026.
+Statut : décisions produit validées par le PM le 27/11/2026.
+
+## Décisions produit (validées)
+
+| Décision | Ce que ça change pour l'utilisateur | Coût | Difficile à défaire ? |
+|---|---|---|---|
+| Mise à jour toutes les 2 s, pas en temps réel | Jusqu'à 2 ou 3 s de décalage entre joueurs | Aucun | Non |
+| Un onglet = un joueur | Recharger garde la partie ; fermer l'onglet fait perdre sa place | Aucun | Non |
+| Départ détecté après 10 s d'absence | Un onglet longtemps en arrière-plan peut être compté parti | Aucun | Non (seuil réglable) |
+| Salles supprimées après 24 h | Une partie ne se retrouve pas le lendemain | Aucun | Non |
+| Offre gratuite Upstash et Vercel | Environ 60 parties de 10 joueurs par mois (estimation) | 0 € | Non |
+| 11e joueur possible en cas d'arrivées simultanées | Très rare | Aucun | Non |
 
 ## Architecture en une phrase
 Le navigateur de chaque joueur interroge le serveur toutes les 2 secondes ; le serveur (fonctions Vercel) lit et écrit l'état de la salle dans Redis (Upstash) et calcule ce que chaque joueur a le droit de voir.

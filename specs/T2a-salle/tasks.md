@@ -1,6 +1,6 @@
 # Tâches T2a - Salle partagée
 
-Statut : brouillon, en attente de validation PM.
+Statut : informatif (méthode V5 : les tâches ne sont plus validées par le PM).
 
 Chaque tâche n'écrit que son propre code, tests d'abord, tests verts avant le commit. Les numéros entre crochets renvoient aux critères de la spec, « R » aux risques du plan.
 
