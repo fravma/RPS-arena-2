@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { scoreRound } from "./engine";
-import { ME, chooseMove, gameTotals, gameWinners, nextRound, startGame, validate } from "./solo";
+import { ME, chooseMove, gameTotals, gameWinners, nextRound, startGame, timeUp, validate } from "./solo";
 
 /** Hasard fixe et rejouable. */
 function seeded(seed: number) {
@@ -67,5 +67,24 @@ describe("Tâche 1 - logique de partie", () => {
     expect(again.round).toBe(0);
     expect(Object.values(gameTotals(again))).toEqual([0, 0, 0, 0, 0]);
     expect(again.modifiers).not.toEqual(first.modifiers);
+  });
+});
+
+describe("Tâche 2 - timer expiré et double révélation", () => {
+  it("Critère 4 - timer à 0 sans validation : je suis « pas joué » avec 0 point, même si j'avais choisi", () => {
+    let g = chooseMove(startGame(seeded(1)), "rock");
+    g = timeUp(g, seeded(2));
+    expect(g.phase).toBe("reveal");
+    expect(g.history[0].moves[ME]).toBeNull();
+    expect(g.history[0].points[ME]).toBe(0);
+  });
+
+  it("Risque 1 - validation et fin du timer au même instant : la manche n'est comptée qu'une fois", () => {
+    let g = chooseMove(startGame(seeded(1)), "rock");
+    g = validate(g, seeded(2));
+    g = timeUp(g, seeded(3));
+    g = validate(g, seeded(4));
+    expect(g.history).toHaveLength(1);
+    expect(g.history[0].moves[ME]).toBe("rock");
   });
 });
