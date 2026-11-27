@@ -46,13 +46,27 @@ export class MemoryHashStore implements HashStore {
   }
 }
 
+/**
+ * Sans désérialisation automatique, le client Upstash renvoie HGETALL sous forme de liste
+ * [champ, valeur, champ, valeur...] et non d'objet (constaté sur la preview T2a).
+ */
+export function pairsToObject(raw: unknown): Record<string, string> | null {
+  if (!raw) return null;
+  const out: Record<string, string> = {};
+  if (Array.isArray(raw)) {
+    for (let i = 0; i + 1 < raw.length; i += 2) out[String(raw[i])] = String(raw[i + 1]);
+  } else {
+    for (const [k, v] of Object.entries(raw as Record<string, unknown>)) out[k] = String(v);
+  }
+  return Object.keys(out).length > 0 ? out : null;
+}
+
 /** Stockage Redis (Upstash, via la Marketplace Vercel). */
 export class UpstashHashStore implements HashStore {
   constructor(private redis: Redis) {}
 
   async getAll(key: string) {
-    const h = await this.redis.hgetall<Record<string, string>>(key);
-    return h && Object.keys(h).length > 0 ? h : null;
+    return pairsToObject(await this.redis.hgetall(key));
   }
 
   async setIfAbsent(key: string, field: string, value: string) {
