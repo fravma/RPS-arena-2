@@ -20,6 +20,9 @@ export default function Salle() {
   const [error, setError] = useState<string | null>(null);
   const [picked, setPicked] = useState<Move | null>(null);
   const [busy, setBusy] = useState(false);
+  /** Décalage entre l'horloge du serveur et celle du navigateur (ms). */
+  const [offset, setOffset] = useState(0);
+  const [, setTick] = useState(0);
 
   useEffect(() => setToken(readToken(code)), [code]);
 
@@ -28,7 +31,11 @@ export default function Salle() {
     try {
       const res = await fetch(`/api/rooms/${code}`, { headers: { "x-player-token": token }, cache: "no-store" });
       const data = await res.json();
-      if (data.ok) { setView(data.view); setError(null); } else setError(data.error);
+      if (data.ok) {
+        setView(data.view);
+        setOffset(data.view.serverNow - Date.now());
+        setError(null);
+      } else setError(data.error);
     } catch {
       setError("Connexion perdue, nouvel essai dans 2 secondes");
     }
@@ -41,6 +48,18 @@ export default function Salle() {
     const id = setInterval(refresh, POLL_MS);
     return () => clearInterval(id);
   }, [token, refresh]);
+
+  // Compte à rebours : rafraîchi 4 fois par seconde d'après l'heure du serveur ; à 0, on relit l'état aussitôt.
+  const deadline = view?.phase === "choose" ? view.deadline : null;
+  const secondsLeft = deadline ? Math.max(0, Math.ceil((deadline - (Date.now() + offset)) / 1000)) : null;
+  useEffect(() => {
+    if (!deadline) return;
+    const id = setInterval(() => setTick((t) => t + 1), 250);
+    return () => clearInterval(id);
+  }, [deadline]);
+  useEffect(() => {
+    if (secondsLeft === 0) refresh();
+  }, [secondsLeft, refresh]);
 
   // Nouvelle manche : on efface le coup sélectionné.
   const round = view?.round;
@@ -82,6 +101,9 @@ export default function Salle() {
         {view && view.phase !== "lobby" && view.modifier && (
           <div className="chips">
             <span className="chip">{view.phase === "over" ? "Partie terminée" : `Manche ${view.round + 1} / 10`}</span>
+            {secondsLeft !== null && (
+              <span className={`timer ${secondsLeft <= 5 ? "low" : ""}`} aria-label="Temps restant">{secondsLeft}</span>
+            )}
             {view.phase !== "over" && (
               <span className={`chip ${view.modifier.move}-bg`} style={{ borderColor: "transparent" }}>
                 {LABEL[view.modifier.move]} <span className={view.modifier.value > 0 ? "plus" : "minus"}>{formatModifier(view.modifier.value)}</span>
@@ -99,7 +121,7 @@ export default function Salle() {
 
       {view?.phase === "lobby" && <Lobby view={view} busy={busy} onStart={() => act("start")} />}
       {view && (view.phase === "choose" || view.phase === "reveal") && (
-        <Round view={view} busy={busy} picked={picked} setPicked={setPicked} onPlay={() => picked && act("move", { move: picked })} onNext={() => act("next")} />
+        <Round view={view} busy={busy || secondsLeft === 0} picked={picked} setPicked={setPicked} onPlay={() => picked && act("move", { move: picked })} onNext={() => act("next")} />
       )}
       {view?.phase === "over" && <Final view={view} />}
     </main>
