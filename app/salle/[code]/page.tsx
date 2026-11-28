@@ -134,7 +134,8 @@ function JoinFromLink({ code, onJoined }: { code: string; onJoined: (token: stri
 
 function Lobby({ view, busy, onStart }: { view: PlayerView; busy: boolean; onStart: () => void }) {
   const present = view.players.filter((p) => p.present);
-  const [copied, setCopied] = useState(false);
+  const [copy, setCopy] = useState<"idle" | "done" | "failed">("idle");
+  const link = typeof window !== "undefined" ? `${location.origin}/salle/${view.code}` : "";
   return (
     <>
       <div className="wrap" style={{ alignItems: "stretch" }}>
@@ -142,10 +143,16 @@ function Lobby({ view, busy, onStart }: { view: PlayerView; busy: boolean; onSta
           <div className="eyebrow">Code de la salle</div>
           <div className="room-code">{view.code}</div>
           <p style={{ margin: 0, fontSize: 14 }}>À dicter ou à partager : les joueurs le saisissent sur l&apos;accueil.</p>
-          <button type="button" onClick={() => { navigator.clipboard?.writeText(location.href); setCopied(true); }}
+          <button type="button" onClick={async () => setCopy((await copyText(link)) ? "done" : "failed")}
             style={{ background: "none", border: 0, padding: 0, font: "inherit", fontWeight: 600, fontSize: 14, textAlign: "left", cursor: "pointer", color: "inherit", textDecoration: "underline", marginTop: "auto" }}>
-            {copied ? "Lien copié" : "Copier le lien d'invitation →"}
+            {copy === "done" ? "Lien copié ✓" : "Copier le lien d'invitation →"}
           </button>
+          {copy === "failed" && (
+            <label className="field" style={{ fontSize: 13 }}>
+              Copie impossible ici : sélectionnez le lien
+              <input type="text" readOnly value={link} onFocus={(e) => e.currentTarget.select()} style={{ fontSize: 13 }} />
+            </label>
+          )}
         </section>
 
         <section className="card grow">
@@ -306,4 +313,26 @@ function Final({ view }: { view: PlayerView }) {
       </div>
     </section>
   );
+}
+
+/** Copie un texte : API presse-papiers, puis ancienne méthode ; renvoie false si les deux échouent. */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(area);
+      return ok;
+    } catch {
+      return false;
+    }
+  }
 }
