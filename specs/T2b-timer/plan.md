@@ -1,8 +1,8 @@
 # Plan T2b - Timer de manche et reconnexion
 
-Statut : décisions produit en attente de validation PM.
+Statut : décisions produit validées par le PM le 28/11/2026.
 
-## Décisions produit (à valider)
+## Décisions produit (validées)
 
 | Décision | Ce que ça change pour l'utilisateur | Coût | Difficile à défaire ? |
 |---|---|---|---|

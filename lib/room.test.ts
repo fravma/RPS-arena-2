@@ -12,6 +12,7 @@ import {
   canAdvance,
   canPlay,
   isRevealed,
+  ROUND_MS,
   viewFor,
   type RoomData,
 } from "./room";
@@ -171,5 +172,38 @@ describe("Tâche 2 - partie", () => {
     const room = game({ moves: { "0:p1": "paper", "0:p2": "rock" }, left: { p0: true } });
     expect(canAdvance(room, "p1", T0)).toBeNull();
     expect(viewFor(room, "p1", T0).isAdmin).toBe(true);
+  });
+});
+
+describe("T2b tâche 1 - timer de manche", () => {
+  const D = T0 + ROUND_MS; // heure limite de la manche 1
+
+  it("Critère 1 - la vue donne l'heure limite de la manche et l'heure du serveur", () => {
+    const v = viewFor(game({ deadlines: { 0: D } }), "p0", T0);
+    expect(v.deadline).toBe(D);
+    expect(v.serverNow).toBe(T0);
+    expect(ROUND_MS).toBe(10_000);
+  });
+
+  it("Critère 2 - à 0, la manche se révèle même si un joueur n'a pas joué ; il marque 0 et ne compte pas", () => {
+    const room = game({ deadlines: { 0: D }, moves: { "0:p0": "paper", "0:p1": "rock" } });
+    expect(isRevealed(room, D - 1)).toBe(false);
+    expect(isRevealed(room, D)).toBe(true);
+    const v = viewFor(room, "p0", D);
+    expect(v.result!.moves.p2).toBeNull();
+    expect(v.result!.points.p2).toBe(0);
+    // Feuille bat 1 Pierre (Léa ne compte pas) : 1 / 1 + 0,5 = 1,5
+    expect(v.result!.points.p0).toBe(1.5);
+  });
+
+  it("Critère 3 - tout le monde a joué avant la fin : révélation sans attendre", () => {
+    const room = game({ deadlines: { 0: D }, moves: { "0:p0": "paper", "0:p1": "rock", "0:p2": "rock" } });
+    expect(isRevealed(room, T0 + 1000)).toBe(true);
+  });
+
+  it("Critère 4 - valider à 0 ou après : « Temps écoulé »", () => {
+    const room = game({ deadlines: { 0: D } });
+    expect(canPlay(room, "p1", D - 1)).toBeNull();
+    expect(canPlay(room, "p1", D)).toBe("Temps écoulé");
   });
 });

@@ -9,6 +9,8 @@ export const MIN_PLAYERS = 2;
 export const PRESENCE_TIMEOUT_MS = 10_000;
 /** Lettres du code de salle : sans O, I, L ni U (ambiguës à l'oral ou à l'écrit). */
 export const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTVWXYZ";
+/** Durée d'une manche (décision PM T2b : 10 s, sans réglage). */
+export const ROUND_MS = 10_000;
 
 export interface Player {
   id: string;
@@ -36,6 +38,8 @@ export interface RoomData {
   moves: Record<string, Move>;
   /** Manches déjà révélées : une manche révélée le reste, même si un joueur revient. */
   revealed?: Record<number, boolean>;
+  /** Heure limite de chaque manche (horodatage serveur en ms), posée à son ouverture. */
+  deadlines?: Record<number, number>;
 }
 
 export function emptyRoom(code: string, now: number): RoomData {
@@ -97,9 +101,15 @@ export function canStart(room: RoomData, playerId: string, now: number): string 
 const moveKey = (round: number, playerId: string) => `${round}:${playerId}`;
 
 /** Révélée si déjà marquée comme telle, ou si tous les joueurs présents ont joué. */
+function timeIsUp(room: RoomData, now: number): boolean {
+  const deadline = room.deadlines?.[room.round];
+  return deadline !== undefined && now >= deadline;
+}
+
 export function isRevealed(room: RoomData, now: number): boolean {
   if (!room.started) return false;
   if (room.revealed?.[room.round]) return true;
+  if (timeIsUp(room, now)) return true;
   const present = presentPlayers(room, now);
   if (present.length === 0) return false;
   return present.every((p) => room.moves[moveKey(room.round, p.id)]);
@@ -109,6 +119,7 @@ export function canPlay(room: RoomData, playerId: string, now: number): string |
   if (!room.started) return "La partie n'a pas commencé";
   if (room.over) return "Partie terminée";
   if (!room.players.some((p) => p.id === playerId)) return "Joueur inconnu dans cette salle";
+  if (timeIsUp(room, now)) return "Temps écoulé";
   if (isRevealed(room, now)) return "Manche déjà révélée";
   if (room.moves[moveKey(room.round, playerId)]) return "Coup déjà joué";
   return null;
@@ -139,6 +150,10 @@ export interface PlayerView {
   /** Index de la manche en cours (0 à 9). */
   round: number;
   modifier: Modifier | null;
+  /** Heure limite de la manche en cours (horloge du serveur), null avant le lancement. */
+  deadline: number | null;
+  /** Heure du serveur au moment de la réponse : le navigateur en déduit son décalage d'horloge. */
+  serverNow: number;
   myMove: Move | null;
   /** Résultat de la manche en cours, seulement une fois révélée. */
   result: { moves: RoundMoves; points: Record<string, number> } | null;
@@ -175,6 +190,8 @@ export function viewFor(room: RoomData, meId: string, now: number): PlayerView {
     })),
     round: room.round,
     modifier: room.started ? room.modifiers[room.round] ?? null : null,
+    deadline: room.started ? room.deadlines?.[room.round] ?? null : null,
+    serverNow: now,
     myMove: room.moves[moveKey(room.round, meId)] ?? null,
     result: revealed || room.over ? { moves: roundMoves(room, room.round), points: perRound[room.round] } : null,
     totals,
