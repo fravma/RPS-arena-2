@@ -30,15 +30,11 @@ Un joueur crée une salle et obtient un code. D'autres le rejoignent avec ce cod
    Étant donné une salle (en attente ou en partie), quand le créateur clique sur « Quitter la salle » ou ferme sa page depuis plus de 10 secondes, alors le joueur humain arrivé juste après lui devient administrateur : c'est lui qui voit les boutons « Lancer la partie » et « Manche suivante ». Un joueur parti ne compte plus dans les joueurs attendus pour la révélation.
 
 ## Expérience (UX/UI)
-Nouvelle direction (demande PM du 27/11) : inspiration du site maemi-studio.fr, à la place de l'inspiration Apple de T1. L'écran de T1 sera restylé dans cette tranche pour garder un seul style.
-
-Ce qui a été relevé sur le site (observé dans le navigateur) :
-- Titres dans une police d'affichage épaisse et arrondie (Dela Gothic One), texte courant en DM Sans.
-- Texte bleu marine très foncé (#042332) plutôt que noir.
-- Fond blanc cassé chaud, grandes formes douces jaune pâle en arrière-plan.
-- Grandes cartes colorées pastel à coins très arrondis : jaune pâle (#EBEC7A), bleu pâle (#E0E9FD), rose (#EFBEE0).
-- Bouton principal bleu vif (#336BF1), texte blanc, coins arrondis (16 px) ; liens secondaires soulignés avec une flèche « → ».
-- Ambiance : moderne, chaleureuse, un peu ludique, aérée.
+Direction artistique "Tableau d'arène" (décision PM du 28/11), création originale qui remplace la direction précédente :
+- Fond sombre (#101218), cartes gris anthracite, coins peu arrondis (4 à 8 px).
+- Une couleur de signal par coup, reprise partout : Pierre orange (#FF8A4C), Feuille turquoise (#3FD0C0), Ciseaux violet (#B49CFF).
+- Accent vert citron (#D4FF3A) pour l'action principale, le code de salle et le joueur courant.
+- Titres et chiffres en Barlow Condensed majuscules, façon tableau de score ; texte courant en Barlow.
 
 Traduction proposée pour RPS Arena (à valider avec la maquette) :
 - Les trois coups ont chacun leur couleur pastel : Pierre jaune, Feuille bleu, Ciseaux rose. On les retrouve dans les boutons, le tableau et le décompte.
@@ -64,7 +60,7 @@ Une base de données Redis (Upstash, via la Marketplace Vercel) devra être reli
 2. Prénom en double refusé.
 3. Écran cible : MacBook Pro 14 pouces.
 4. Maquette avant le code (étape Maquette de la méthode).
-5. Style inspiré de maemi-studio.fr, à la place de l'inspiration Apple.
+5. Direction artistique originale "Tableau d'arène" (remplace la direction du 27/11, décision du 28/11).
 6. Le créateur de la salle fait passer à la manche suivante (option a).
 7. Si le créateur s'en va, l'administration passe au joueur humain arrivé juste après lui (critère 9).
 8. Projet pédagogique, aucun usage commercial.

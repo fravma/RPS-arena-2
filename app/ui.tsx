@@ -4,7 +4,7 @@ import type { Move } from "@/lib/engine";
 export const LABEL: Record<Move, string> = { rock: "Pierre", paper: "Feuille", scissors: "Ciseaux" };
 
 export function MoveIcon({ move, size = 40 }: { move: Move; size?: number }) {
-  const common = { width: size, height: size, viewBox: "0 0 64 64", fill: "none", stroke: "#042332", strokeWidth: 3, "aria-hidden": true };
+  const common = { width: size, height: size, viewBox: "0 0 64 64", fill: "none", stroke: "currentColor", strokeWidth: 3, "aria-hidden": true };
   if (move === "rock")
     return (
       <svg {...common} strokeLinejoin="round">

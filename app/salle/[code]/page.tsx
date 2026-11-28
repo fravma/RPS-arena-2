@@ -139,7 +139,7 @@ function Lobby({ view, busy, onStart }: { view: PlayerView; busy: boolean; onSta
   return (
     <>
       <div className="wrap" style={{ alignItems: "stretch" }}>
-        <section className="option rock-bg" style={{ flex: "1 1 260px", minWidth: 0 }}>
+        <section className="option code-box" style={{ flex: "1 1 260px", minWidth: 0 }}>
           <div className="eyebrow">Code de la salle</div>
           <div className="room-code">{view.code}</div>
           <p style={{ margin: 0, fontSize: 14 }}>À dicter ou à partager : les joueurs le saisissent sur l&apos;accueil.</p>
