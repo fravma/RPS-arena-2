@@ -12,6 +12,7 @@ import {
   canAdvance,
   canPlay,
   isRevealed,
+  reclaimableId,
   ROUND_MS,
   viewFor,
   type RoomData,
@@ -205,5 +206,30 @@ describe("T2b tâche 1 - timer de manche", () => {
     const room = game({ deadlines: { 0: D } });
     expect(canPlay(room, "p1", D - 1)).toBeNull();
     expect(canPlay(room, "p1", D)).toBe("Temps écoulé");
+  });
+});
+
+describe("T2b tâche 2 - reconnexion", () => {
+  const later = T0 + PRESENCE_TIMEOUT_MS + 1;
+
+  it("Critère 5 - partie en cours, joueur parti : il peut reprendre sa place avec le même prénom", () => {
+    const room = game();
+    room.lastSeen.p0 = later;
+    room.lastSeen.p1 = later; // Léa (p2) n'a plus interrogé depuis plus de 10 s
+    expect(reclaimableId(room, " léa", later)).toBe("p2");
+    expect(canJoin(room, "Léa", later)).toBeNull();
+  });
+
+  it("Critère 5 - un joueur qui a cliqué sur « Quitter » peut aussi revenir", () => {
+    expect(reclaimableId(game({ left: { p1: true } }), "Aziz", T0)).toBe("p1");
+  });
+
+  it("Critère 6 - joueur encore présent : son prénom reste refusé", () => {
+    expect(reclaimableId(game(), "Aziz", T0)).toBeNull();
+    expect(canJoin(game(), "Aziz", T0)).toBe("Prénom déjà pris dans cette salle");
+  });
+
+  it("Critère 7 - nouveau venu, partie en cours : refusé", () => {
+    expect(canJoin(game(), "Inconnu", T0)).toBe("Partie déjà commencée");
   });
 });

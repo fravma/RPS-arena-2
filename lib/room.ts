@@ -80,10 +80,24 @@ export function adminOf(room: RoomData, now: number): string | null {
   return presentPlayers(room, now)[0]?.id ?? null;
 }
 
+/**
+ * Partie en cours : joueur parti portant ce prénom, qui peut reprendre sa place (T2b, critère 5).
+ * null si aucun joueur parti ne porte ce prénom.
+ */
+export function reclaimableId(room: RoomData, name: string, now: number): string | null {
+  if (!room.started) return null;
+  const p = room.players.find((x) => normalize(x.name) === normalize(name));
+  return p && !isPresent(room, p.id, now) ? p.id : null;
+}
+
 /** Peut-on rejoindre avec ce prénom ? null si oui, sinon le message à afficher. */
 export function canJoin(room: RoomData, name: string, now: number): string | null {
   if (!name.trim()) return "Saisissez votre prénom";
-  if (room.started) return "Partie déjà commencée";
+  if (room.started) {
+    if (reclaimableId(room, name, now)) return null;
+    const taken = room.players.some((p) => normalize(p.name) === normalize(name));
+    return taken ? "Prénom déjà pris dans cette salle" : "Partie déjà commencée";
+  }
   const present = presentPlayers(room, now);
   if (present.length >= MAX_PLAYERS) return "Salle pleine";
   if (present.some((p) => normalize(p.name) === normalize(name))) return "Prénom déjà pris dans cette salle";
