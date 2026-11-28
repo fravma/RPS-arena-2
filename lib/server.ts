@@ -11,6 +11,8 @@ import {
   emptyRoom,
   generateCode,
   isRevealed,
+  reclaimableId,
+  ROUND_MS,
   viewFor,
   type PlayerView,
   type RoomData,
@@ -38,12 +40,14 @@ function parse(code: string, h: Record<string, string>): { room: RoomData; token
   room.round = Number(h.round ?? 0);
   room.modifiers = h.modifiers ? JSON.parse(h.modifiers) : [];
   room.revealed = {};
+  room.deadlines = {};
   for (const [f, v] of Object.entries(h)) {
     const [kind, a, b] = f.split(":");
     if (kind === "p") room.players.push({ id: a, ...JSON.parse(v) });
     else if (kind === "t") tokens[a] = v;
     else if (kind === "s") room.lastSeen[a] = Number(v);
-    else if (kind === "l") room.left[a] = true;
+    else if (kind === "l") { if (v === "1") room.left[a] = true; }
+    else if (kind === "dl") room.deadlines[Number(a)] = Number(v);
     else if (kind === "m") room.moves[`${a}:${b}`] = v as Move;
     else if (kind === "rv") room.revealed[Number(a)] = true;
   }
@@ -86,8 +90,16 @@ export async function createRoom(ctx: Ctx, name: string): Promise<Joined | Fail>
 export async function joinRoom(ctx: Ctx, code: string, name: string): Promise<Joined | Fail> {
   const loaded = await load(ctx, code);
   if (!loaded) return { ok: false, error: "Salle introuvable" };
-  const refusal = canJoin(loaded.room, name, ctx.now());
+  const now = ctx.now();
+  const refusal = canJoin(loaded.room, name, now);
   if (refusal) return { ok: false, error: refusal };
+  // Partie en cours : un joueur parti reprend sa place avec un nouveau jeton (T2b, critère 5).
+  const back = reclaimableId(loaded.room, name, now);
+  if (back) {
+    const token = randomId();
+    await ctx.store.set(key(code), { [`t:${token}`]: back, [`s:${back}`]: String(now), [`l:${back}`]: "0" });
+    return { ok: true, code: code.toUpperCase(), token, playerId: back };
+  }
   return addPlayer(ctx, code, name);
 }
 
@@ -119,7 +131,11 @@ export async function startGame(ctx: Ctx, code: string, token: string): Promise<
   if (!id.ok) return id;
   const refusal = canStart(id.room, id.playerId, ctx.now());
   if (refusal) return { ok: false, error: refusal };
-  await ctx.store.set(key(code), { modifiers: JSON.stringify(drawModifiers(10, ctx.rng)), round: "0" });
+  await ctx.store.set(key(code), {
+    modifiers: JSON.stringify(drawModifiers(10, ctx.rng)),
+    round: "0",
+    "dl:0": String(ctx.now() + ROUND_MS),
+  });
   await ctx.store.setIfAbsent(key(code), "started", "1");
   return { ok: true };
 }
@@ -142,7 +158,8 @@ export async function advanceRound(ctx: Ctx, code: string, token: string): Promi
   const r = id.room.round;
   // Un double clic n'avance qu'une fois : seul le premier pose le verrou de la manche.
   if (!(await ctx.store.setIfAbsent(key(code), `adv:${r}`, "1"))) return { ok: true };
-  await ctx.store.set(key(code), r + 1 >= 10 ? { over: "1" } : { round: String(r + 1) });
+  // La manche suivante a sa propre heure limite, comptée depuis son ouverture.
+  await ctx.store.set(key(code), r + 1 >= 10 ? { over: "1" } : { round: String(r + 1), [`dl:${r + 1}`]: String(ctx.now() + ROUND_MS) });
   return { ok: true };
 }
 
