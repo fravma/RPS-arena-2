@@ -1,6 +1,6 @@
 # Spec T2b - Timer de manche et reconnexion
 
-Statut : brouillon, en attente de validation PM.
+Statut : validée par le PM le 28/11/2026.
 
 ## Pourquoi
 En T2a, une manche attend que tous les joueurs aient joué : un joueur distrait bloque tout le monde, et un joueur qui ferme son onglet perd sa place pour de bon. Le brief prévoit les deux cas : un timer par manche (le joueur qui n'a pas joué passe la manche avec 0 point) et la possibilité de revenir après une déconnexion en gardant son total. C'est aussi un prérequis pour les agents IA (T3), qui doivent jouer sous la même contrainte de temps que les humains.
@@ -13,7 +13,7 @@ En T2a, une manche attend que tous les joueurs aient joué : un joueur distrait 
 ## Critères d'acceptation (vérifiés sur la preview, avec 2 ou 3 onglets)
 
 1. **Timer visible et commun**
-   Étant donné une manche qui s'ouvre, alors chaque joueur voit le même compte à rebours (écart d'une seconde au plus entre onglets), qui passe en rouge sous 5 secondes.
+   Étant donné une manche qui s'ouvre, alors chaque joueur voit le même compte à rebours de 10 secondes (écart d'une seconde au plus entre onglets), qui passe en rouge sous 5 secondes.
 2. **Révélation à la fin du temps**
    Étant donné une manche où un joueur n'a pas joué, quand le timer arrive à 0, alors la manche se révèle chez tous en 3 secondes au plus ; le joueur apparaît « pas joué » avec 0 point et n'est compté ni dans les joueurs battus ni dans ceux ayant fait le même coup.
 3. **Révélation avant la fin si tout le monde a joué**
@@ -35,6 +35,7 @@ En T2a, une manche attend que tous les joueurs aient joué : un joueur distrait 
 ## Hors scope
 Passage automatique à la manche suivante, réglage de la durée par le créateur, pause, agents IA (T3).
 
-## Questions ouvertes
-1. **Durée d'une manche :** 20 s comme en T1 ? Une partie de 10 manches dure alors environ 4 à 5 minutes avec les révélations (inférence).
-2. **Reconnexion par prénom :** n'importe qui connaissant le code et le prénom d'un joueur parti peut reprendre sa place. Acceptable pour un projet pédagogique ? L'alternative (un lien secret de reconnexion par joueur) est plus sûre mais demande au joueur de le garder.
+## Décisions du PM (28/11)
+1. Durée d'une manche : 10 secondes, sans réglage possible.
+2. Reconnexion par prénom acceptée (projet pédagogique), malgré le risque qu'un tiers reprenne la place d'un joueur parti.
+3. Vérification PM allégée pour cette tranche (critères jugés difficiles à tester à la main) : voir le plan, section Vérification.
